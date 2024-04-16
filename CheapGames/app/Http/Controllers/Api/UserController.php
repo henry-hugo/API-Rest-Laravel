@@ -29,7 +29,7 @@ class UserController extends Controller
         if ($existingUserByEmail) {
             // Se o usuário com o email fornecido já existir, verifica se está inativo e o ativa
             if (!$existingUserByEmail->Active) {
-                $existingUserByEmail->update(['Active' => true]);
+                $existingUserByEmail->update(["Active" => true]);
                 return response()->json(['message' => 'Existing user activated successfully'], 200);
             } else {
                 return response()->json(['message' => 'User already exists and is active'], 200);
@@ -62,12 +62,12 @@ class UserController extends Controller
     public function update(Request $request, string $id)
 {
     $usuario = Users::findOrFail($id);
-    $email = $request->input('Email');
+    $email = $request->input("Email");
 
     // Verifica se o email enviado na atualização é diferente do email atual do usuário
     if ($email !== $usuario->email) {
         // Verifica se já existe um usuário com o novo email no banco de dados
-        $existingUser = Users::where('Email', $email)->first();
+        $existingUser = Users::where("Email", $email)->first();
         if ($existingUser) {
             // Se o usuário com o novo email já existir, não permite a atualização
             return response()->json(['error' => 'A user with this email already exists'], 409);
@@ -75,13 +75,13 @@ class UserController extends Controller
     }
 
     // Verifica se está tentando alterar o CPF
-    if ($request->filled('CPF')) {
+    if ($request->filled("CPF")) {
         // Se estiver tentando alterar o CPF, não permite a atualização
         return response()->json(['error' => 'CPF cannot be updated'], 400);
     }
 
     // Atualiza os outros campos do usuário
-    $usuario->fill($request->except('CPF'))->save();
+    $usuario->fill($request->except("CPF"))->save();
     return response()->json(['message' => 'User updated successfully'], 200);
 }
 

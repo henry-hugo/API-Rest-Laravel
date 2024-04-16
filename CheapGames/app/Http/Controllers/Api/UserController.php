@@ -15,14 +15,17 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    {
+   
+    {    
+       
+        // Obter todos os dados da solicitação
         $userData = $request->all();
-        $email = $userData['Email'];
-        $cpf = $userData['CPF'];
-    
+        $email = $userData["Email"];
+        $cpf = $userData["CPF"];
+
         // Verifica se já existe um usuário com o email fornecido
-        $existingUserByEmail = Users::where('Email', $email)->first();
-    
+        $existingUserByEmail = Users::where("Email", $email)->first();
+
         if ($existingUserByEmail) {
             // Se o usuário com o email fornecido já existir, verifica se está inativo e o ativa
             if (!$existingUserByEmail->Active) {
@@ -32,17 +35,21 @@ class UserController extends Controller
                 return response()->json(['message' => 'User already exists and is active'], 200);
             }
         }
-    
+
         // Verifica se já existe um usuário com o CPF fornecido
-        $existingUserByCpf = Users::where('CPF', $cpf)->first();
-    
+        $existingUserByCpf = Users::where("CPF", $cpf)->first();
+
         if ($existingUserByCpf) {
             return response()->json(['error' => 'A user with this CPF already exists'], 409);
         }
-    
+
         // Se nenhum usuário com o email ou CPF fornecidos existir, cria um novo usuário
-        Users::create($userData);
-        return response()->json(['message' => 'User created successfully'], 201);
+        try {
+            Users::create($userData);
+            return response()->json(['message' => 'User created successfully'], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error creating user'], 500);
+        } 
     }
     
 

@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*'],//mudar pra só aceitar do react 
 
     'allowed_origins_patterns' => [],
 

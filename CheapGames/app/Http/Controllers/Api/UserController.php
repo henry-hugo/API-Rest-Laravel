@@ -22,6 +22,7 @@ class UserController extends Controller
         $userData = $request->all();
         $email = $userData["Email"];
         $cpf = $userData["CPF"];
+        $userData["Password"] = bcrypt($userData["Password"]); 
 
         // Verifica se já existe um usuário com o email fornecido
         $existingUserByEmail = Users::where("Email", $email)->first();
@@ -47,7 +48,7 @@ class UserController extends Controller
         try {
             Users::create($userData);
             return response()->json(['message' => 'User created successfully'], 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error creating user'], 500);
         } 
     }

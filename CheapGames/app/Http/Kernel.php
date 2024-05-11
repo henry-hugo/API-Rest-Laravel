@@ -6,6 +6,11 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
+    function startSession(){
+        app(StartSession::class)->handle(request(), function ($request) {
+            // Nenhuma implementação adicional necessária aqui
+        });
+    }
     /**
      * The application's global HTTP middleware stack.
      *

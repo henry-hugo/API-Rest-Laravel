@@ -42,16 +42,24 @@ class CategoryController extends Controller
     
     public function update(Request $request, string $id)
     {
-        $category = Category::find($id);
-        if ($category) {
-            $category->Name = $request->Name;
-            $category->save();
-    
-            return response()->json($category);
-        } else {
-            return response()->json(['error' => 'Categoria não encontrada'], 404);
-        }
+    $name = strtoupper($request->Name);
+    $existingCategory = Category::where('Name', $name)->first();
+
+    if ($existingCategory && $existingCategory->CategoriaID != $id) {
+        return response()->json(['error' => 'Categoria já existe'], 400);
     }
+
+    $category = Category::find($id);
+    if ($category) {
+        $category->Name = $name;
+        $category->save();
+
+        return response()->json($category);
+    } else {
+        return response()->json(['error' => 'Categoria não encontrada'], 404);
+    }
+    }
+
     
     public function destroy(string $id)
     {

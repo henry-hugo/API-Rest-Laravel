@@ -13,7 +13,7 @@ class PostController extends Controller
     public function index()
     {
         // Listar todos os posts
-        return Posts::all();
+        $posts =  Posts::all();
         return response()->json(['posts' => $posts]);
     }
 

@@ -1,65 +1,152 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Posts;
+use App\Models\Images;
+
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        // Listar todos os posts
+        return Posts::all();
+        return response()->json(['posts' => $posts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+   
     public function store(Request $request)
     {
-        //
+        
+        // Validação dos dados recebidos
+        $request->validate([
+            'UserID' => 'required|integer',
+            'Title' => 'required|string|max:255',
+            'Description' => 'required|string',
+            'Active' => 'required|boolean',
+            'Date' => 'required|date',
+            'CategoryID' => 'required|integer',
+            'PlatformID' => 'required|integer',
+            'NewPrice' => 'required|numeric',
+            'OldPrice' => 'required|numeric',
+            'Link' => 'nullable|url',
+            'ImageURL' => 'required|string|max:255',
+            // Adicione outras regras de validação conforme necessário
+        ]);
+
+        // Crie um novo post
+        $post = Posts::create([
+            'UserID' => $request->input('UserID'),
+            'Title' => $request->input('Title'),
+            'Description' => $request->input('Description'),
+            'Active' => $request->input('Active'),
+            'Date' => $request->input('Date'),
+            'CategoryID' => $request->input('CategoryID'),
+            'PlatformID' => $request->input('PlatformID'),
+            'NewPrice' => $request->input('NewPrice'),
+            'OldPrice' => $request->input('OldPrice'),
+            'Link' => $request->input('Link')
+            // Preencha outros campos conforme necessário
+        ]);
+
+        $imagePath = $request->input('ImageURL', 'default_image.jpg'); // Certifique-se de que 'ImageURL' seja uma string
+        $post->images()->update([
+            'ImageURL' => $imagePath,
+            'Active' => $request->input('Active'),
+            'Date' => $request->input('Date')
+        ]);
+
+        return response()->json(['message' => 'Post criado com sucesso!', 'post' => $post]);
     }
 
-    /**
-     * Display the specified resource.
-     */
+   
     public function show(string $id)
     {
-        //
+        $post = Posts::find($id);
+        if ($post) {
+            return response()->json($post);
+        } else {
+            return response()->json(['error' => 'Plataforma não encontrada'], 404);
+        }
     }
+    
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
+  
     public function update(Request $request, string $id)
-    {
-        //
-    }
+{   
+    
+    $request->validate([
+        'UserID' => 'required|integer',
+        'Title' => 'required|string|max:255',
+        'Description' => 'required|string',
+        'Active' => 'required|boolean',
+        'Date' => 'required|date',
+        'CategoryID' => 'required|integer',
+        'PlatformID' => 'required|integer',
+        'NewPrice' => 'required|numeric',
+        'OldPrice' => 'required|numeric',
+        'Link' => 'nullable|url',
+        'ImageURL' => 'required|string|max:255',
+        // Adicione outras regras de validação conforme necessário
+    ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    $post = Posts::find($id);
+    if (!$post) {
+        return response()->json(['message' => 'Recurso não encontrado'], 404);
+    }
+    
+
+    if ($post) {
+        // Atualize os campos relevantes com base nos dados do $request
+        $post->update([
+            'Title' => $request->input('Title'),
+            'Description' => $request->input('Description'),
+            'Active' => $request->input('Active'),
+            'Date' => $request->input('Date'),
+            'CategoryID' => $request->input('CategoryID'),
+            'PlatformID' => $request->input('PlatformID'),
+            'NewPrice' => $request->input('NewPrice'),
+            'OldPrice' => $request->input('OldPrice'),
+            'Link' => $request->input('Link')
+            // Preencha outros campos conforme necessário
+        ]);
+
+        $imagePath = $request->input('ImageURL', 'default_image.jpg'); // Certifique-se de que 'ImageURL' seja uma string
+        $post->images()->update([
+            'ImageURL' => $imagePath,
+            'Active' => $request->input('Active'),
+            'Date' => $request->input('Date')
+        ]);
+        
+        return response()->json($post);
+    } else {
+        return response()->json(['error' => 'Post não encontrado'], 404);
+    }
+    
+}
+
+  
     public function destroy(string $id)
     {
-        //
+        $post = Posts::find($id);
+        if (!$post) {
+            return response()->json(['message' => 'Recurso não encontrado'], 404);
+            }
+            if ($post->Active == true) {
+                $post->update([
+                    'Active' => false,
+                    ]);
+
+                    return response()->json(['message' => 'Post deletado com sucesso'], 200);
+            }else{
+                $post->update([
+                    'Active' => true,
+                    ]);
+
+                    return response()->json(['message' => 'Post Ativo com sucesso'], 200);
+            }
     }
 }

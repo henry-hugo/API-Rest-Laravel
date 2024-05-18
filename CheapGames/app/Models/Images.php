@@ -13,4 +13,12 @@ class Images extends Model
     protected $fillable = ['PostID', 'ImageURL', 'Active', 'Date'];
 
     public $timestamps = false;
+
+
+
+    public function post()
+{
+    return $this->belongsTo(Posts::class, 'PostID', 'PostID');
+}
+
 }

@@ -12,14 +12,14 @@ class PostController extends Controller
     
     public function index()
     {
-        // Listar todos os posts
-        return Posts::all();
+        $posts = Posts::with('category', 'platform', 'images')->get();
         return response()->json(['posts' => $posts]);
     }
-
+    
    
     public function store(Request $request)
     {
+        dd($request);
         
         // Validação dos dados recebidos
         $request->validate([
@@ -56,7 +56,7 @@ class PostController extends Controller
         $post->images()->update([
             'ImageURL' => $imagePath,
             'Active' => $request->input('Active'),
-            'Date' => $request->input('Date')
+            'Date' => now()
         ]);
 
         return response()->json(['message' => 'Post criado com sucesso!', 'post' => $post]);
@@ -65,13 +65,14 @@ class PostController extends Controller
    
     public function show(string $id)
     {
-        $post = Posts::find($id);
+        $post = Posts::with('category', 'platform', 'images')->find($id); // Busca o post pelo ID
         if ($post) {
-            return response()->json($post);
+            return response()->json(['post' => $post]);
         } else {
-            return response()->json(['error' => 'Plataforma não encontrada'], 404);
+            return response()->json(['error' => 'Post não encontrado'], 404);
         }
     }
+    
     
 
   
@@ -116,9 +117,7 @@ class PostController extends Controller
 
         $imagePath = $request->input('ImageURL', 'default_image.jpg'); // Certifique-se de que 'ImageURL' seja uma string
         $post->images()->update([
-            'ImageURL' => $imagePath,
-            'Active' => $request->input('Active'),
-            'Date' => $request->input('Date')
+            'ImageURL' => $imagePath
         ]);
         
         return response()->json($post);

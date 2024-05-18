@@ -21,7 +21,15 @@ class Posts extends Model
         return $this->hasMany(Images::class, 'PostID', 'PostID');
     }
     
+    // No modelo Post
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'CategoryID');
+    }
 
-
+    public function platform()
+    {
+        return $this->belongsTo(Platform::class, 'PlatformID');
+    }
 
 }

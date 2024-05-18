@@ -13,4 +13,9 @@ class Ratings extends Model
     protected $fillable = ['PostID', 'UserID', 'Liked', 'Date'];
 
     public $timestamps = false;
+
+    public function post()
+    {
+    return $this->belongsTo(Posts::class);
+    }
 }

@@ -14,4 +14,14 @@ class Posts extends Model
 
 
     public $timestamps = false;
+
+
+    public function images()
+    {
+        return $this->hasMany(Images::class, 'PostID', 'PostID');
+    }
+    
+
+
+
 }

@@ -10,7 +10,8 @@ class PlatformController extends Controller
 {
     public function index()
     {
-        return Platform::all();
+        $platform = Platform::all();
+        return response()->json(['platform' => $platform]);
     }
 
     public function store(Request $request)

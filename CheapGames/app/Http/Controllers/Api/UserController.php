@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Users;
+use App\Models\User;
 
 class UserController extends Controller
 {
  
     public function index()
     { 
-        $users = Users::all();
+        $users = User::all();
         return response()->json(['users' => $users]);
     }
 
@@ -23,9 +23,13 @@ class UserController extends Controller
         $userData = $request->all();
         $email = $userData["Email"];
         $cpf = $userData["CPF"];
+        
+        //Isso criptografa a senha comentar se quiser usar senha não criptografada
+        //$userData["Password"] = bcrypt($userData["Password"]); 
+
 
         // Verifica se já existe um usuário com o email fornecido
-        $existingUserByEmail = Users::where("Email", $email)->first();
+        $existingUserByEmail = User::where("Email", $email)->first();
 
         if ($existingUserByEmail) {
             // Se o usuário com o email fornecido já existir, verifica se está inativo e o ativa
@@ -38,7 +42,7 @@ class UserController extends Controller
         }
 
         // Verifica se já existe um usuário com o CPF fornecido
-        $existingUserByCpf = Users::where("CPF", $cpf)->first();
+        $existingUserByCpf = User::where("CPF", $cpf)->first();
 
         if ($existingUserByCpf) {
             return response()->json(['error' => 'A user with this CPF already exists'], 409);
@@ -46,7 +50,7 @@ class UserController extends Controller
 
         // Se nenhum usuário com o email ou CPF fornecidos existir, cria um novo usuário
         try {
-            Users::create($userData);
+            User::create($userData);
             return response()->json(['message' => 'User created successfully'], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error creating user'], 500);
@@ -57,39 +61,39 @@ class UserController extends Controller
 
     public function show(string $id)
     {
-        return Users::findOrFail($id);
+        return User::findOrFail($id);
     }
 
     public function update(Request $request, string $id)
-{
-    $usuario = Users::findOrFail($id);
-    $email = $request->input("Email");
+    {
+        $usuario = User::findOrFail($id);
+        $email = $request->input("Email");
 
-    // Verifica se o email enviado na atualização é diferente do email atual do usuário
-    if ($email !== $usuario->email) {
-        // Verifica se já existe um usuário com o novo email no banco de dados
-        $existingUser = Users::where("Email", $email)->first();
-        if ($existingUser) {
-            // Se o usuário com o novo email já existir, não permite a atualização
-            return response()->json(['error' => 'A user with this email already exists'], 409);
+        // Verifica se o email enviado na atualização é diferente do email atual do usuário
+        if ($email !== $usuario->email) {
+            // Verifica se já existe um usuário com o novo email no banco de dados
+            $existingUser = User::where("Email", $email)->first();
+            if ($existingUser) {
+                // Se o usuário com o novo email já existir, não permite a atualização
+                return response()->json(['error' => 'A user with this email already exists'], 409);
+            }
         }
-    }
 
-    // Verifica se está tentando alterar o CPF
-    if ($request->filled("CPF")) {
-        // Se estiver tentando alterar o CPF, não permite a atualização
-        return response()->json(['error' => 'CPF cannot be updated'], 400);
-    }
+        // Verifica se está tentando alterar o CPF
+        if ($request->filled("CPF")) {
+            // Se estiver tentando alterar o CPF, não permite a atualização
+            return response()->json(['error' => 'CPF cannot be updated'], 400);
+        }
 
-    // Atualiza os outros campos do usuário
-    $usuario->fill($request->except("CPF"))->save();
-    return response()->json(['message' => 'User updated successfully'], 200);
-}
+        // Atualiza os outros campos do usuário
+        $usuario->fill($request->except("CPF"))->save();
+        return response()->json(['message' => 'User updated successfully'], 200);
+    }
 
 
     public function destroy(string $id)
     {
-        $usuario = Users::findOrFail($id);
+        $usuario = User::findOrFail($id);
         if ($usuario->role == "admin") {
             return response()->json([
                 'error' => 'No se puede eliminar el usuario administrador',

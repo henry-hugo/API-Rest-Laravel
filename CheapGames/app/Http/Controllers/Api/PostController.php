@@ -15,6 +15,7 @@ class PostController extends Controller
     
     public function index()
     {
+
         $posts = Posts::with('category', 'platform', 'images', 'ratings.user')->get();
 
         // Verificando se os posts foram recuperados corretamente
@@ -44,8 +45,6 @@ class PostController extends Controller
             'posts' => $posts,
         ]);
     }
-
-    
     
     
     

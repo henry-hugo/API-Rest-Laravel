@@ -2,10 +2,14 @@
 use App\Http\Controllers\Api\UserController; 
 use App\Http\Controllers\Api\CategoryController; 
 use App\Http\Controllers\Api\PlatformController; 
-use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\PostController; 
+use App\Http\Controllers\Api\RatingController; 
+
+
 use App\Http\Controllers\Api\AuthController;
 // use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route;
+
 //Route::apiResource('usuarios', 'Api\UserController');
 
 Route::resources([
@@ -36,6 +40,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //     'usuario' => UserController::class,
 // ]);
 
+Route::resources([
+    'reacao' => RatingController::class,
+]);
 
 
 // Route::resources([
@@ -54,3 +61,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // ]);
 
 Route::post('/login', [AuthController::class, 'login']);
+

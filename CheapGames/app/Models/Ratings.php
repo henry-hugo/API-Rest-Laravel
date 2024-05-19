@@ -16,6 +16,12 @@ class Ratings extends Model
 
     public function post()
     {
-    return $this->belongsTo(Posts::class);
+        return $this->belongsTo(Posts::class, 'PostID', 'PostID');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'UserID');
+    }
+
 }

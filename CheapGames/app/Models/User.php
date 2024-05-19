@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $primaryKey = "UserID";
     protected $fillable = ['Username', 'Email','Password', 'Credit','CPF', 'Active', 'Date' ];
 
+    public $timestamps = false;
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -39,4 +40,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function user()
+    {
+    return $this->belongsTo(User::class); // Se você tiver um modelo User
+    }
 }

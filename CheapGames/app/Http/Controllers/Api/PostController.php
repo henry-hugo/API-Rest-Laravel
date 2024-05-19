@@ -93,7 +93,7 @@ class PostController extends Controller
                 } catch (ClientException $e) {
                     $errorResponse = $e->getResponse();
                     $errorBody = $errorResponse->getBody()->getContents();
-                    dd($errorBody);
+                
                 }
 
         // Crie um novo post
@@ -168,8 +168,8 @@ class PostController extends Controller
 
   
     public function update(Request $request, string $id)
-{   
-    dd($request);
+    {   
+
     $request->validate([
         'UserID' => 'required|integer',
         'Title' => 'required|string|max:255',
@@ -184,7 +184,6 @@ class PostController extends Controller
         //'ImageURL' => 'required|string|max:255',
         // Adicione outras regras de validação conforme necessário
     ]);
-
 
     $client = new Client();
     try {
@@ -207,7 +206,7 @@ class PostController extends Controller
     } catch (ClientException $e) {
         $errorResponse = $e->getResponse();
         $errorBody = $errorResponse->getBody()->getContents();
-        dd($errorBody);
+      
     }
 
     $post = Posts::find($id);
@@ -221,7 +220,7 @@ class PostController extends Controller
         $post->update([
             'Title' => $request->input('Title'),
             'Description' => $request->input('Description'),
-            'Active' => $request->input('Active'),
+            'Active' => true,
             'Date' => $request->input('Date'),
             'CategoryID' => $request->input('CategoryID'),
             'PlatformID' => $request->input('PlatformID'),
@@ -247,7 +246,7 @@ class PostController extends Controller
         return response()->json(['error' => 'Post não encontrado'], 404);
     }
     
-}
+    }
 
   
     public function destroy(string $id)

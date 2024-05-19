@@ -16,17 +16,25 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-   
     {    
-       
+        // Validação dos dados da solicitação
+        $validatedData = $request->validate([
+            'Username' => 'required|max:255',
+            'Password' => 'required|min:8',
+            'Credit' => 'required|numeric',
+            //'Email' => 'required|email|unique:Users,Email',
+            //'CPF' => 'required|unique:Users,CPF',
+            //'Active' => 'required|boolean',
+            //'Date' => 'required|date',
+        ]);
+
         // Obter todos os dados da solicitação
         $userData = $request->all();
         $email = $userData["Email"];
         $cpf = $userData["CPF"];
         
         //Isso criptografa a senha comentar se quiser usar senha não criptografada
-        //$userData["Password"] = bcrypt($userData["Password"]); 
-
+        $userData["Password"] = bcrypt($userData["Password"]); 
 
         // Verifica se já existe um usuário com o email fornecido
         $existingUserByEmail = User::where("Email", $email)->first();
@@ -47,15 +55,23 @@ class UserController extends Controller
         if ($existingUserByCpf) {
             return response()->json(['error' => 'A user with this CPF already exists'], 409);
         }
-
         // Se nenhum usuário com o email ou CPF fornecidos existir, cria um novo usuário
         try {
-            User::create($userData);
+            User::create([
+                'Username' => $userData["Username"],
+                'Email' => $userData["Email"],
+                'Password' => $userData["Password"],
+                'Credit' => $userData["Credit"],
+                'CPF' => $userData["CPF"],
+                'Active' => true,
+                'Date' => now(),
+            ]);
             return response()->json(['message' => 'User created successfully'], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error creating user'], 500);
         } 
     }
+
     
 
 

@@ -3,6 +3,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CategoryController; 
 use App\Http\Controllers\Api\PlatformController; 
 use App\Http\Controllers\Api\PostController; 
+use App\Http\Controllers\Api\RatingController; 
 
 //Route::apiResource('usuarios', 'Api\UserController');
 
@@ -25,4 +26,9 @@ Route::resources([
 
 Route::resources([
     'post' => PostController::class,
+]);
+
+
+Route::resources([
+    'reacao' => RatingController::class,
 ]);

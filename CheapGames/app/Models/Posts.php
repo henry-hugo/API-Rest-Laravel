@@ -31,5 +31,20 @@ class Posts extends Model
     {
         return $this->belongsTo(Platform::class, 'PlatformID');
     }
+    public function ratings()
+    {
+        return $this->hasMany(Ratings::class, 'PostID', 'PostID');
+    }
+
+    public function ratingsSum()
+    {
+        $likes = $this->ratings->sum('Liked');
+        $dislikes = $this->ratings->count() - $likes;
+
+        return [
+            'likes' => $likes,
+            'dislikes' => $dislikes,
+        ];
+    }
 
 }

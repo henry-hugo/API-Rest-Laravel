@@ -38,7 +38,7 @@ class PostController extends Controller
         }
 
         // Removendo o atributo 'ratings' do post
-        unset($posts->ratings);
+        $posts->makeHidden('ratings');
 
         return response()->json([
             'status' => 200,

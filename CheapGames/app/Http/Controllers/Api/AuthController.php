@@ -28,27 +28,28 @@ class AuthController extends Controller
 
         
         //Se tiver criptografia na senha usa esse 
-        // if(!$user || !Hash::check($request->Password, $user->Password)){
-        //     throw ValidationException::withMessages([
-        //         'email' => ['As credenciais estão incorretas']
-        //     ]);
-        // }
-        //Se a senha não tem criptografia usa isso
-        if(!$user || $request->Password != $user->Password){
+        if(!$user || !Hash::check($request->Password, $user->Password)){
             throw ValidationException::withMessages([
                 'email' => ['As credenciais estão incorretas']
             ]);
         }
+        //Se a senha não tem criptografia usa isso
+        // if(!$user || $request->Password != $user->Password){
+        //     throw ValidationException::withMessages([
+        //         'email' => ['As credenciais estão incorretas']
+        //     ]);
+        // }
         $token = $user->createToken('invoice')->plainTextToken;
         
         return response()->json([
-            'token' => $token
+            'token' => $token,
+            'UserID' => $user->UserID
         ]);
     }
 
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
 
-        return $this->response('Token deletado', 200);
+        return response()->json('Token deletado', 200);
     }
 }

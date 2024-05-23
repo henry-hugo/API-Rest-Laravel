@@ -18,6 +18,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'reacao' => RatingController::class,
         'post' => PostController::class,
     ]);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 Route::post('usuario', [UserController::class, 'store']);
 

@@ -19,6 +19,9 @@ WORKDIR /app
 COPY . .
 COPY .env.example .env
 
+# Remove o diretório vendor
+RUN rm -rf vendor
+
 # Define as variáveis de ambiente no Dockerfile
 ARG DB_CONNECTION=mysql
 ARG DB_HOST=cheapgames.czeqk0iimp5p.us-east-1.rds.amazonaws.com

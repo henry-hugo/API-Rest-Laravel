@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: CheapMySQL
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Cheapgamespiv
+      MYSQL_DATABASE: cheap_games
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: Cheapgamespiv
+    ports:
+      - "3306:3306"
+    networks:
+      - cheap-games
+  main:
+    container_name: CheapServer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'php artisan serve --host=0.0.0.0'
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: cheap_games
+      DB_USERNAME: admin
+      DB_PASSWORD: Cheapgamespiv
+    depends_on:
+      - db
+    networks:
+      - cheap-games
+networks:
+  cheap-games:
+    driver: bridge

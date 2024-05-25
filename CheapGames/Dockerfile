@@ -1,49 +1,43 @@
-# Use a imagem oficial do PHP 8.2 com Apache
-FROM php:8.2-apache
+FROM php:8.2-fpm
 
-# Atualize a lista de pacotes e instale as dependências necessárias
+# Instala as dependências
 RUN apt-get update && apt-get install -y \
-    unzip \
-    git \
     libzip-dev \
-    && docker-php-ext-install zip
+    zlib1g-dev \
+    mariadb-client \
+    git \
+    unzip \
+ && docker-php-ext-install pdo pdo_mysql sockets zip
 
-# Instale as extensões do PHP necessárias para o Laravel
-RUN docker-php-ext-install pdo_mysql
+# Instala o composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+     --install-dir=/usr/local/bin --filename=composer
 
-# Ative o mod_rewrite do Apache para o Laravel
-RUN a2enmod rewrite
+WORKDIR /app
 
-# Copie o projeto Laravel para o contêiner
-COPY . /var/www/html/
+# Copia os arquivos do projeto
+COPY . .
+COPY .env.example .env
 
-# Dê permissão ao diretório storage
-RUN chown -R www-data:www-data /var/www/html/storage
+# Define as variáveis de ambiente no Dockerfile
+ARG DB_CONNECTION=mysql
+ARG DB_HOST=cheapgames.czeqk0iimp5p.us-east-1.rds.amazonaws.com
+ARG DB_PORT=3306
+ARG DB_DATABASE=cheap_games
+ARG DB_USERNAME=admin
+ARG DB_PASSWORD=Cheapgamespiv
+ARG APP_ENV=production
 
-# Instale o Composer no contêiner
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Substitui as variáveis no arquivo .env pelas variáveis de ambiente
+RUN sed -i "s#DB_HOST=.*#DB_HOST=${DB_HOST}#" .env \
+    && sed -i "s#DB_PORT=.*#DB_PORT=${DB_PORT}#" .env \
+    && sed -i "s#DB_DATABASE=.*#DB_DATABASE=${DB_DATABASE}#" .env \
+    && sed -i "s#DB_USERNAME=.*#DB_USERNAME=${DB_USERNAME}#" .env \
+    && sed -i "s#DB_PASSWORD=.*#DB_PASSWORD=${DB_PASSWORD}#" .env \
+    && sed -i "s#APP_ENV=.*#APP_ENV=${APP_ENV}#" .env
 
-# Remova o diretório do fornecedor existente
-RUN rm -rf vendor/
-
-# Atualize o arquivo composer.lock
-RUN composer update --lock
-
-# Execute o Composer Install para instalar as dependências do Laravel
 RUN composer install
-
-# Crie ou edite o arquivo .env
-RUN echo "DB_CONNECTION=mysql\n\
-DB_HOST=cheapgames.czeqk0iimp5p.us-east-1.rds.amazonaws.com\n\
-DB_PORT=3306\n\
-DB_DATABASE=cheap_games\n\
-DB_USERNAME=admin\n\
-DB_PASSWORD=edit" > /var/www/html/.env
-
+RUN php artisan route:cache && php artisan view:cache
 RUN php artisan key:generate
 
-# Exponha a porta 80
-EXPOSE 80
-
-# Inicie o servidor Apache
-CMD ["apache2-foreground"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0"]

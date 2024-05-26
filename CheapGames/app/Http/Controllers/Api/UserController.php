@@ -1,5 +1,6 @@
 <?php
 
+// Importando as classes necessárias
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -8,13 +9,14 @@ use App\Models\User;
 
 class UserController extends Controller
 {
- 
+    // Função para listar todos os usuários
     public function index()
     { 
-        $users = User::all();
-        return response()->json(['users' => $users]);
+        $users = User::all(); // Recupera todos os usuários
+        return response()->json(['users' => $users]); // Retorna os usuários como JSON
     }
 
+    // Função para criar um novo usuário
     public function store(Request $request)
     {    
         // Validação dos dados da solicitação
@@ -22,10 +24,7 @@ class UserController extends Controller
             'Username' => 'required|max:255',
             'Password' => 'required|min:8',
             'Credit' => 'required|numeric',
-            //'Email' => 'required|email|unique:Users,Email',
-            //'CPF' => 'required|unique:Users,CPF',
-            //'Active' => 'required|boolean',
-            //'Date' => 'required|date',
+            'Date' => 'required|date',
         ]);
 
         // Obter todos os dados da solicitação
@@ -33,7 +32,7 @@ class UserController extends Controller
         $email = $userData["Email"];
         $cpf = $userData["CPF"];
         
-        //Isso criptografa a senha comentar se quiser usar senha não criptografada
+        // Isso criptografa a senha
         $userData["Password"] = bcrypt($userData["Password"]); 
 
         // Verifica se já existe um usuário com o email fornecido
@@ -64,7 +63,7 @@ class UserController extends Controller
                 'Credit' => $userData["Credit"],
                 'CPF' => $userData["CPF"],
                 'Active' => true,
-                'Date' => now(),
+                'Date' => $userData["Date"],
             ]);
             return response()->json(['message' => 'User created successfully'], 201);
         } catch (\Exception $e) {
@@ -72,17 +71,16 @@ class UserController extends Controller
         } 
     }
 
-    
-
-
+    // Função para exibir um usuário específico
     public function show(string $id)
     {
-        return User::findOrFail($id);
+        return User::findOrFail($id); // Recupera o usuário pelo ID e retorna como JSON
     }
 
+    // Função para atualizar um usuário existente
     public function update(Request $request, string $id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = User::findOrFail($id); // Recupera o usuário pelo ID
         $email = $request->input("Email");
 
         // Verifica se o email enviado na atualização é diferente do email atual do usuário
@@ -106,10 +104,10 @@ class UserController extends Controller
         return response()->json(['message' => 'User updated successfully'], 200);
     }
 
-
+    // Função para deletar um usuário existente
     public function destroy(string $id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = User::findOrFail($id); // Recupera o usuário pelo ID
         if ($usuario->role == "admin") {
             return response()->json([
                 'error' => 'No se puede eliminar el usuario administrador',

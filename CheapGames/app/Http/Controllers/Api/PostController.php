@@ -64,7 +64,7 @@ class PostController extends Controller
         ]);
 
         // Verifica se foi enviada uma imagem
-        if ($request->input('ImageURL') == null){
+        if ($request->ImageURL == null){
             $imgurURL = "https://imgur.com/a/5DKF8aR";
         } else {
             // Faz o upload da imagem para o Imgur
@@ -170,7 +170,7 @@ class PostController extends Controller
         ]);
 
         // Verifica se foi enviada uma imagem
-        if ($request->input('ImageURL') == null){
+        if ($request->ImageURL == null){
             $imgurURL = "https://imgur.com/a/5DKF8aR";
         } else {
             // Faz o upload da imagem para o Imgur

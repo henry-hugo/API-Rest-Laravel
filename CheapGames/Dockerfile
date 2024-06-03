@@ -40,7 +40,11 @@ RUN sed -i "s#DB_HOST=.*#DB_HOST=${DB_HOST}#" .env \
     && sed -i "s#APP_ENV=.*#APP_ENV=${APP_ENV}#" .env
 
 RUN composer install
+RUN php artisan migrate --force
 RUN php artisan route:cache && php artisan view:cache
 RUN php artisan key:generate
+RUN php artisan jwt:secret
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
+EXPOSE 8000
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

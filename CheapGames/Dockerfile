@@ -43,7 +43,6 @@ RUN composer install
 RUN php artisan migrate --force
 RUN php artisan route:cache && php artisan view:cache
 RUN php artisan key:generate
-RUN php artisan jwt:secret
 
 EXPOSE 8000
 
